@@ -25,11 +25,20 @@ main {
     flex: 1 1 auto;
 }
 
+#dataJson {
+    max-width: 600px;
+}
+
+table {
+    width: 100%;
+}
+
 table td {
     height: 30px;
-    width: 30px;
+    max-width: 600px;
     border: 1px solid lightgrey;
     text-align: center;
+    padding: 0 10px;
 }
 
 iframe {
