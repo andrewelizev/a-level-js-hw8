@@ -1,4 +1,4 @@
-// GitHub https://github.com/andrewelizev/a-level-homeworks
+// GitHub https://github.com/andrewelizev/a-level-js-hw8
 
 // Lesson 08
 
@@ -18,17 +18,29 @@ console.log('HW1 ==================================================');
 let dom = document.getElementById('dataJson');
 let url = 'https://swapi.dev/api/people/1/';
 
-let query = function(url) {
+let queryData = function(url) {
     fetch(url)
     .then(response => response.json())
     .then(data => jsonToTable(dom, data))
     .catch(err => console.log(err));
 };
 
-function jsonToTable(dom, data) {
-    console.log(data);
+function createButton(url) {
+    console.log('url ', url);
+    let btn = document.createElement('button');
+    btn.setAttribute('value', url);
 
-    let tr, td;
+    fetch(url).then(response => response.json())
+    .then(data => btn.innerText = (data.name) ? data.name : data.title);
+
+    // btn.innerText = url.slice(22, -1);
+    btn.addEventListener('click', () => queryData(url));
+    return btn;
+}
+
+function jsonToTable(dom, data) {
+
+    let tr, td, btn, table;
     let tableBody = document.createElement('table');
     tableBody.setAttribute('id', 'tableBody');
 
@@ -37,24 +49,21 @@ function jsonToTable(dom, data) {
         td = document.createElement('td');
         td.innerText = key;
         tr.append(td);
-
         td = document.createElement('td');
 
+        // console.log('data[key] ', data[key]);
+
         if (data[key].includes('https://swapi.dev/api/')) {
-            let btn = document.createElement('button');
-            btn.setAttribute('value', data[key]);
-            btn.innerText = data[key].slice(22, -1);
-            btn.setAttribute('onclick', 'query(value)');
+            btn = createButton(data[key]);
             td.append(btn);
             tr.append(td);
         } else if(Array.isArray(data[key])) {
             for (let elem of data[key]) {
-                console.log(elem);
+
+                // console.log('elem ', elem);
+
                 if (elem.includes('https://swapi.dev/api/')) {
-                    let btn = document.createElement('button');
-                    btn.setAttribute('value', elem);
-                    btn.innerText = elem.slice(22, -1);
-                    btn.setAttribute('onclick', 'query(value)');
+                    btn = createButton(elem);
                     td.append(btn);
                 }
             }
@@ -76,7 +85,7 @@ function jsonToTable(dom, data) {
         }
 }
 
-query(url);
+queryData(url);
 
 
 
