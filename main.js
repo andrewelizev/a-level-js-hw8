@@ -25,55 +25,60 @@ let queryData = function(url) {
     .catch(err => console.log(err));
 };
 
+queryData(url);
+
 function createButton(url) {
-    console.log('url ', url);
     let btn = document.createElement('button');
     btn.setAttribute('value', url);
 
-    fetch(url).then(response => response.json())
-    .then(data => btn.innerText = (data.name) ? data.name : data.title);
+    // Код ниже добавляет имена кнопкам соответсвенно url, но значительно снижает скорость
+    // fetch(url).then(response => response.json())
+    // .then(data => btn.innerText = (data.name) ? data.name : data.title);
 
-    // btn.innerText = url.slice(22, -1);
+    btn.innerText = url.slice(22, -1);
     btn.addEventListener('click', () => queryData(url));
     return btn;
 }
 
+function createCell(cellData) {
+    let cell = document.createElement('td');
+
+    if (typeof cellData === 'string' && cellData.includes('https://swapi.dev/api/')) {
+            let btn = createButton(cellData);
+            cell.append(btn);
+            return cell;
+        } else if (Array.isArray(cellData)) {
+
+            for (let elem of cellData) {
+                if (typeof elem === 'string' && elem.includes('https://swapi.dev/api/')) {
+                    let btn = createButton(elem);
+                    cell.append(btn);
+                }
+            }
+            return cell;
+        } else {
+            cell.innerText = cellData;
+            return cell;
+        }
+}
+
+function createRow(...cells) {
+    let row = document.createElement('tr');
+    row.append(...cells);
+    return row;
+}
+
 function jsonToTable(dom, data) {
 
-    let tr, td, btn, table;
+    let row, cellTitle, cellData, table;
     let tableBody = document.createElement('table');
     tableBody.setAttribute('id', 'tableBody');
 
     for (let key in data) {
-        tr = document.createElement('tr');
-        td = document.createElement('td');
-        td.innerText = key;
-        tr.append(td);
-        td = document.createElement('td');
-
-        // console.log('data[key] ', data[key]);
-
-        if (data[key].includes('https://swapi.dev/api/')) {
-            btn = createButton(data[key]);
-            td.append(btn);
-            tr.append(td);
-        } else if(Array.isArray(data[key])) {
-            for (let elem of data[key]) {
-
-                // console.log('elem ', elem);
-
-                if (elem.includes('https://swapi.dev/api/')) {
-                    btn = createButton(elem);
-                    td.append(btn);
-                }
-            }
-            tr.append(td);
-        } else {
-            td.innerText = data[key];
-            tr.append(td);
-        }
-
-        tableBody.append(tr);
+        cellTitle = createCell(key);
+        cellData = createCell(data[key]);
+        row = createRow(cellTitle, cellData);
+        tableBody.append(row);
     }
 
         table = document.getElementById('tableBody');
@@ -84,8 +89,6 @@ function jsonToTable(dom, data) {
             table.replaceWith(tableBody);
         }
 }
-
-queryData(url);
 
 
 
